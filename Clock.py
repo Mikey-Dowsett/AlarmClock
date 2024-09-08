@@ -1,29 +1,68 @@
-﻿from tkinter import *
+﻿import tkinter
+from tkinter import *
 from tkinter.ttk import *
 import time
 import requests, json
 from PIL import Image, ImageTk
 
-font = "System"
+font = "Goudy Stout"
 
 class Clock(Tk):
     def __init__(self):
         super().__init__()
 
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
-        self.attributes('-fullscreen', True)
+        self.columnconfigure(0, weight=1)
+        self.attributes('-fullscreen', False)
 
         # Display the time
-        self.clock_label = Label(self, text="00:00:00", font=(font, 50))
-        self.clock_label.grid(row=0, column=0, pady=20, padx=20)
+        self.clock_frame = Frame()
+        self.clock_label = Label(self.clock_frame, text="00:00:00", font=(font, 50))
+        self.clock_label.pack()
+        self.clock_frame.grid(row=0, column=1, pady=20, padx=20, sticky='ne')
         self.update_clock()
 
         # Get and Display current weather
         self.api_key_weather = "ecd0981e6c7ecb45051875dd7e89ba19"
         self.base_url_weather = "http://api.openweathermap.org/data/2.5/weather?"
         self.complete_url_weather = self.base_url_weather + "lat=38&lon=-94&appid=" + self.api_key_weather
-        self.weather_image_label = Label()
+
+        #Create all the weather components
+        self.weather_frame = Frame()
+        self.current_temp_label = Label(self.weather_frame, text="Temp1", font=(font, 30))
+        self.feels_like_temp_label = Label(self.weather_frame, text="Temp2", font=(font, 20))
+        self.weather_image_label = Label(self.weather_frame)
+        self.current_weather_label = Label(self.weather_frame, text="Weather", font=(font, 40))
+
+        #Place all the weather components
+        self.weather_image_label.grid(row=0, rowspan=6, column=0, sticky='nw')
+        self.current_weather_label.grid(row=1, column=1, padx=20, sticky="w")
+        self.current_temp_label.grid(row=2, column=1, padx=20, sticky="w")
+        self.feels_like_temp_label.grid(row=3, column=1, padx=20, sticky="w")
+        self.weather_frame.grid(row=0, column=0, pady=10, padx=10, sticky='nw')
+
+        #High Low Frame
+        self.high_low_frame = Frame()
+        self.temp_low_image = ImageTk.PhotoImage(Image.open("Images/lowtemp.png").resize((75, 75)))
+        self.temp_low_image_label = Label(self.high_low_frame, image=self.temp_low_image)
+        self.temp_low_label = Label(self.high_low_frame, text="20", font=(font, 30))
+        self.temp_high_image = ImageTk.PhotoImage(Image.open("Images/hightemp.png").resize((75, 75)))
+        self.temp_high_image_label = Label(self.high_low_frame, image=self.temp_high_image)
+        self.temp_high_label = Label(self.high_low_frame, text="25", font=(font, 30))
+        self.temp_low_image_label.grid(row=0, column=0)
+        self.temp_low_label.grid(row=0, column=1)
+        self.temp_high_image_label.grid(row=0, column=2, padx=(20,0))
+        self.temp_high_label.grid(row=0, column=3)
+        self.high_low_frame.grid(row=1, column=0, pady=10, padx=10, sticky='nw')
+
+        #Humidity Frame
+        self.humidity_frame = Frame()
+        self.humidity_image = ImageTk.PhotoImage(Image.open("Images/humidity.png").resize((75, 75)))
+        self.humidity_image_label = Label(self.humidity_frame, image=self.humidity_image)
+        self.humidity_label = Label(self.humidity_frame, text="Humidity", font=(font, 30))
+        self.humidity_image_label.grid(row=0, column=0, sticky='n')
+        self.humidity_label.grid(row=0, column=1)
+        self.humidity_frame.grid(row=2, column=0, pady=10, padx=10, sticky='nw')
+
         self.update_weather()
 
     #Update the time
@@ -31,36 +70,33 @@ class Clock(Tk):
         current_time = time.strftime('%H:%M:%S')
         self.clock_label.config(text=current_time)
         self.after(1000, lambda:self.update_clock())
+        if int(time.strftime('%M'))%10 == 0 and int(time.strftime('%S')) == 0:
+            self.update_weather()
 
     def update_weather(self):
         response_weather = requests.get(self.complete_url_weather) #Gets the response object
         weather_data = response_weather.json() #Convert json format in python format
 
         if weather_data["cod"] != "404":
+            print(weather_data)
             weather_data_main = weather_data["main"]
             weather_data_weather = weather_data["weather"][0]
 
             current_temp = round(weather_data_main["temp"] - 273.15, 1)
-            current_temp_label = Label(self, text=f"Temp: {current_temp}", font=(font, 30))
-            current_temp_label.grid(row=1, column=0)
+            self.current_temp_label.config(text=f"{current_temp}\u00B0")
 
             feels_like = round(weather_data_main["feels_like"] - 273.15, 1)
-            feels_like_temp_label = Label(self, text=f"Feels Like: {feels_like}", font=(font, 20))
-            feels_like_temp_label.grid(row=1, column=1)
+            self.feels_like_temp_label.config(text=f"{feels_like}\u00B0")
 
-            humidity = weather_data_main["humidity"]
-            humidity_label = Label(self, text=f"Humidity: {humidity}", font=(font, 20))
-            humidity_label.grid(row=2, column=0)
-
+            self.humidity_label.config(text=weather_data_main["humidity"])
+            self.temp_low_label.config(text=round(weather_data_main["temp_min"] - 273.15, 1))
+            self.temp_high_label.config(text=round(weather_data_main["temp_max"] - 273.15, 1))
 
             self.weather_image = Image.open("Images/" + weather_data_weather["icon"] + ".png")
-            self.weather_image = ImageTk.PhotoImage(self.weather_image.resize((300, 300)))
-            self.weather_image_label = Label(self, image=self.weather_image)
-            self.weather_image_label.grid(row=0, rowspan=2, column=4)
+            self.weather_image = ImageTk.PhotoImage(self.weather_image.resize((200, 200)))
+            self.weather_image_label.config(image=self.weather_image)
 
-            current_weather_label = Label(self, text=weather_data_weather["main"], font=(font, 40))
-            current_weather_label.grid(row=0, column=3)
-
+            self.current_weather_label.config(text=weather_data_weather["main"])
 
 if __name__ == "__main__":
     window = Clock()

@@ -11,7 +11,7 @@ fonts.sort()
 def fill_frame(frame):
    for f in fonts:
       #Create a label to display the font
-      label = Label(frame,text=f,font=(f, 14)).pack()
+      label = Label(frame,text=f,font=(f, 25)).pack()
 def onFrameConfigure(canvas):
    canvas.configure(scrollregion=canvas.bbox("all"))
 #Create a canvas
