@@ -22,7 +22,7 @@ class Clock(Tk):
         self.update_clock()
 
         # Get and Display current weather
-        self.api_key_weather = "ecd0981e6c7ecb45051875dd7e89ba19"
+        self.api_key_weather = ""
         self.base_url_weather = "http://api.openweathermap.org/data/2.5/weather?"
         self.complete_url_weather = self.base_url_weather + "lat=38&lon=-94&appid=" + self.api_key_weather
 
