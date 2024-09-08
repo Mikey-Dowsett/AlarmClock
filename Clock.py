@@ -14,11 +14,15 @@ class Clock(Tk):
         self.columnconfigure(0, weight=1)
         self.attributes('-fullscreen', True)
         self.screen_height = self.winfo_screenheight()
-        print(self.screen_height)
+        self.smallest_text = int(self.screen_height * 0.04)
+        self.medium_text = int(self.screen_height * 0.05)
+        self.large_text = int(self.screen_height * 0.06)
+        self.small_image = int(self.screen_height * 0.2)
+        self.large_image = int(self.screen_height * 0.35)
 
         # Display the time
         self.clock_frame = Frame()
-        self.clock_label = Label(self.clock_frame, text="00:00:00", font=(font, int(self.screen_height * 0.05)))
+        self.clock_label = Label(self.clock_frame, text="00:00:00", font=(font, self.large_text))
         self.clock_label.pack()
         self.clock_frame.grid(row=0, column=1, pady=20, padx=20, sticky='ne')
         self.update_clock()
@@ -30,10 +34,10 @@ class Clock(Tk):
 
         #Create all the weather components
         self.weather_frame = Frame()
-        self.current_temp_label = Label(self.weather_frame, text="Temp1", font=(font, int(self.screen_height * 0.04)))
-        self.feels_like_temp_label = Label(self.weather_frame, text="Temp2", font=(font, int(self.screen_height * 0.03)))
+        self.current_temp_label = Label(self.weather_frame, text="Temp1", font=(font, self.medium_text))
+        self.feels_like_temp_label = Label(self.weather_frame, text="Temp2", font=(font, int(self.smallest_text/2)))
         self.weather_image_label = Label(self.weather_frame)
-        self.current_weather_label = Label(self.weather_frame, text="Weather", font=(font, int(self.screen_height * 0.05)))
+        self.current_weather_label = Label(self.weather_frame, text="Weather", font=(font, self.large_text))
 
         #Place all the weather components
         self.weather_image_label.grid(row=0, rowspan=6, column=0, sticky='nw')
@@ -44,12 +48,12 @@ class Clock(Tk):
 
         #High Low Frame
         self.high_low_frame = Frame()
-        self.temp_low_image = ImageTk.PhotoImage(Image.open("Images/lowtemp.png").resize((int(self.screen_height * 0.1), int(self.screen_height * 0.1))))
+        self.temp_low_image = ImageTk.PhotoImage(Image.open("Images/lowtemp.png").resize((self.small_image, self.small_image)))
         self.temp_low_image_label = Label(self.high_low_frame, image=self.temp_low_image)
-        self.temp_low_label = Label(self.high_low_frame, text="20", font=(font, int(self.screen_height * 0.03)))
-        self.temp_high_image = ImageTk.PhotoImage(Image.open("Images/hightemp.png").resize((int(self.screen_height * 0.1), int(self.screen_height * 0.1))))
+        self.temp_low_label = Label(self.high_low_frame, text="20", font=(font, self.smallest_text))
+        self.temp_high_image = ImageTk.PhotoImage(Image.open("Images/hightemp.png").resize((self.small_image, self.small_image)))
         self.temp_high_image_label = Label(self.high_low_frame, image=self.temp_high_image)
-        self.temp_high_label = Label(self.high_low_frame, text="25", font=(font, int(self.screen_height * 0.03)))
+        self.temp_high_label = Label(self.high_low_frame, text="25", font=(font, self.smallest_text))
         self.temp_low_image_label.grid(row=0, column=0)
         self.temp_low_label.grid(row=0, column=1)
         self.temp_high_image_label.grid(row=0, column=2, padx=(20,0))
@@ -58,9 +62,9 @@ class Clock(Tk):
 
         #Humidity Frame
         self.humidity_frame = Frame()
-        self.humidity_image = ImageTk.PhotoImage(Image.open("Images/humidity.png").resize((int(self.screen_height * 0.1), int(self.screen_height * 0.1))))
+        self.humidity_image = ImageTk.PhotoImage(Image.open("Images/humidity.png").resize((self.small_image, self.small_image)))
         self.humidity_image_label = Label(self.humidity_frame, image=self.humidity_image)
-        self.humidity_label = Label(self.humidity_frame, text="Humidity", font=(font, int(self.screen_height * 0.03)))
+        self.humidity_label = Label(self.humidity_frame, text="Humidity", font=(font, self.smallest_text))
         self.humidity_image_label.grid(row=0, column=0, sticky='n')
         self.humidity_label.grid(row=0, column=1)
         self.humidity_frame.grid(row=2, column=0, pady=10, padx=10, sticky='nw')
@@ -88,14 +92,14 @@ class Clock(Tk):
             self.current_temp_label.config(text=f"{current_temp}\u00B0")
 
             feels_like = round(weather_data_main["feels_like"] - 273.15, 1)
-            self.feels_like_temp_label.config(text=f"{feels_like}\u00B0")
+            self.feels_like_temp_label.config(text=f"Feels Like {feels_like}\u00B0")
 
             self.humidity_label.config(text=weather_data_main["humidity"])
             self.temp_low_label.config(text=round(weather_data_main["temp_min"] - 273.15, 1))
             self.temp_high_label.config(text=round(weather_data_main["temp_max"] - 273.15, 1))
 
             self.weather_image = Image.open("Images/" + weather_data_weather["icon"] + ".png")
-            self.weather_image = ImageTk.PhotoImage(self.weather_image.resize((int(self.screen_height * 0.25), int(self.screen_height * 0.25))))
+            self.weather_image = ImageTk.PhotoImage(self.weather_image.resize((self.large_image, self.large_image)))
             self.weather_image_label.config(image=self.weather_image)
 
             self.current_weather_label.config(text=weather_data_weather["main"])
