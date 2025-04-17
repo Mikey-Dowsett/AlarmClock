@@ -23,8 +23,9 @@ class Clock(Tk):
         self.small_text = int(self.screen_height * 0.05)
         self.medium_text = int(self.screen_height * 0.07)
         self.large_text = int(self.screen_height * 0.08)
+        self.tiny_image = int(self.screen_height * 0.05)
         self.small_image = int(self.screen_height * 0.15)
-        self.large_image = int(self.screen_height * 0.35)
+        self.large_image = int(self.screen_height * 0.2)
 
         # Display the time
         self.clock_frame = Frame()
@@ -32,14 +33,22 @@ class Clock(Tk):
         self.date_label.pack(anchor='e')
         self.clock_label = Label(self.clock_frame, text="00:00:00", font=(font, self.large_text))
         self.clock_label.pack(anchor='e')
-        self.clock_frame.grid(row=0, rowspan=3, column=1, pady=20, padx=(0, 20), sticky='ns')
         self.cozy_image_label = Label(self.clock_frame)
         self.cozy_image_label.pack()
-        self.update_clock()
-        self.pick_cozy_image()
+        self.clock_frame.grid(row=0, rowspan=3, column=1, pady=20, padx=(0, 20), sticky='ns')
+
+        # Display the alarm time
+        self.alarm_frame = Frame()
+        self.alarm_image = Image.open("Images/alarm.png")
+        self.alarm_image = ImageTk.PhotoImage(self.alarm_image.resize((self.small_image, self.small_image)))
+        self.alarm_image_label = Label(self.alarm_frame, image=self.alarm_image)
+        self.alarm_image_label.grid(row=0, column=1)
+        self.alarm_label = Label(self.alarm_frame, text="07:30", font=(font, self.small_text))
+        self.alarm_label.grid(row=0, column=0, padx=10)
+        self.alarm_frame.grid(row=10, column=1, pady=10, padx=10, sticky='se')
 
         # Get and Display current weather
-        self.api_key_weather = ""
+        self.api_key_weather = "ecd0981e6c7ecb45051875dd7e89ba19"
         self.base_url_weather = "http://api.openweathermap.org/data/3.0/onecall?"
         self.complete_url_weather = self.base_url_weather + "lat=38&lon=-94&appid=" + self.api_key_weather + "&units=metric"
 
@@ -51,10 +60,10 @@ class Clock(Tk):
         self.current_weather_label = Label(self.weather_frame, text="Thunderstorm", font=(font, self.large_text))
 
         #Place all the weather components
-        self.weather_image_label.grid(row=0, rowspan=6, column=0, sticky='nw')
-        self.current_weather_label.grid(row=1, column=1, padx=20, sticky="w")
-        self.current_temp_label.grid(row=2, column=1, padx=20, sticky="w")
-        self.feels_like_temp_label.grid(row=3, column=1, padx=20, sticky="w")
+        self.weather_image_label.grid(row=1, rowspan=6, column=0, sticky='nw')
+        self.current_weather_label.grid(row=0, column=0, columnspan=5, padx=20, sticky="w")
+        self.current_temp_label.grid(row=3, column=1, padx=20, sticky="w")
+        self.feels_like_temp_label.grid(row=4, column=1, padx=20, sticky="w")
         self.weather_frame.grid(row=0, column=0, pady=10, padx=10, sticky='nw')
 
         #High Low Frame
@@ -94,6 +103,8 @@ class Clock(Tk):
 
         self.weather_data_frame.grid(row=2, column=0, pady=10, padx=10, sticky='nw')
 
+        self.update_clock()
+        self.pick_cozy_image()
         self.update_weather()
 
     #Update the time
