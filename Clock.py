@@ -1,13 +1,9 @@
 ﻿import random
-import tkinter
-import winsound
 from tkinter import *
 from tkinter.ttk import *
 import time
-import requests, json
+import requests
 from PIL import Image, ImageTk
-from playsound import playsound
-import threading
 
 font = "Nunito"
 
@@ -17,7 +13,6 @@ class Clock(Tk):
 
         self.columnconfigure(0, weight=1)
         self.attributes('-fullscreen', True)
-        #threading.Thread(target=playsound, args=("Sounds/0.wav",True), daemon=True).start()
 
         self.screen_height = self.winfo_screenheight()
         self.small_text = int(self.screen_height * 0.05)
@@ -36,16 +31,6 @@ class Clock(Tk):
         self.cozy_image_label = Label(self.clock_frame)
         self.cozy_image_label.pack()
         self.clock_frame.grid(row=0, rowspan=3, column=1, pady=20, padx=(0, 20), sticky='ns')
-
-        # Display the alarm time
-        self.alarm_frame = Frame()
-        self.alarm_image = Image.open("Images/alarm.png")
-        self.alarm_image = ImageTk.PhotoImage(self.alarm_image.resize((self.small_image, self.small_image)))
-        self.alarm_image_label = Label(self.alarm_frame, image=self.alarm_image)
-        self.alarm_image_label.grid(row=0, column=1)
-        self.alarm_label = Label(self.alarm_frame, text="07:30", font=(font, self.small_text))
-        self.alarm_label.grid(row=0, column=0, padx=10)
-        self.alarm_frame.grid(row=10, column=1, pady=10, padx=10, sticky='se')
 
         # Get and Display current weather
         self.api_key_weather = "ecd0981e6c7ecb45051875dd7e89ba19"
