@@ -4,6 +4,9 @@ from tkinter.ttk import *
 import time
 import requests
 from PIL import Image, ImageTk
+import os
+import sys
+os.chdir(os.path.dirname(os.path.abspath(sys.argv[0])))
 
 font = "Nunito"
 
@@ -136,4 +139,5 @@ class Clock(Tk):
 
 if __name__ == "__main__":
     window = Clock()
+    window.config(cursor="none")
     window.mainloop()
