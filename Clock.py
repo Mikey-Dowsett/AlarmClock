@@ -23,12 +23,12 @@ class Clock(tk.Tk):
 
         self.configure(bg=BLACK)
         self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
+        self.columnconfigure(1, weight=0)
         self.attributes('-fullscreen', True)
 
         self.screen_height = self.winfo_screenheight()
-        self.tiny_text = int(self.screen_height * 0.035)
-        self.small_text = int(self.screen_height * 0.045)
+        self.tiny_text = int(self.screen_height * 0.025)
+        self.small_text = int(self.screen_height * 0.035)
         self.medium_text = int(self.screen_height * 0.065)
         self.large_text = int(self.screen_height * 0.09)
         self.tiny_image = int(self.screen_height * 0.08)
@@ -49,45 +49,50 @@ class Clock(tk.Tk):
 
         # Weather frame on right (column 1)
         self.weather_frame = tk.Frame(self, bg=BLACK)
+        self.weather_frame.columnconfigure(0, weight=0)
+        self.weather_frame.columnconfigure(1, weight=0)
+        self.weather_frame.columnconfigure(2, weight=0)
 
         # Weather ICON
         self.weather_image_label = tk.Label(self.weather_frame, bg=BLACK)
-        self.weather_image_label.grid(row=0, column=0, sticky='e', padx=(0, 10))
+        self.weather_image_label.grid(row=0, column=0, columnspan=2, sticky='w')
 
         # Current TEMP
         self.current_temp_label = tk.Label(self.weather_frame, text="25\u00B0",
                                            font=(font_family, self.small_text, "bold"), fg=WHITE, bg=BLACK)
-        self.current_temp_label.grid(row=0, column=1, sticky='e', padx=(0, 10))
+        self.current_temp_label.grid(row=0, column=1, sticky='e')
 
         # Weather DESCRIPTION
         self.current_weather_label = tk.Label(self.weather_frame, text="Thunderstorm",
                                               font=(font_family, self.small_text, "bold"), fg=WHITE, bg=BLACK)
-        self.current_weather_label.grid(row=0, column=2, sticky='e', padx=(0, 10))
+        self.current_weather_label.grid(row=0, column=2, sticky='e')
 
         # High/Low temps below weather_frame, still in column 1 on right
         self.high_low_frame = tk.Frame(self.weather_frame, bg=BLACK)
         self.temp_low_image = ImageTk.PhotoImage(
             Image.open("Images/lowtemp.png").resize((self.tiny_image, self.tiny_image)))
         self.temp_low_image_label = tk.Label(self.high_low_frame, image=self.temp_low_image, bg=BLACK)
-        self.temp_low_label = tk.Label(self.high_low_frame, text="20\u00B0", font=(font_family, self.tiny_text),
+        self.temp_low_label = tk.Label(self.high_low_frame, text="20\u00B0", font=(font_family, self.small_text, "bold"),
                                        fg=WHITE, bg=BLACK)
         self.temp_high_image = ImageTk.PhotoImage(
             Image.open("Images/hightemp.png").resize((self.tiny_image, self.tiny_image)))
         self.temp_high_image_label = tk.Label(self.high_low_frame, image=self.temp_high_image, bg=BLACK)
-        self.temp_high_label = tk.Label(self.high_low_frame, text="25\u00B0", font=(font_family, self.tiny_text),
+        self.temp_high_label = tk.Label(self.high_low_frame, text="25\u00B0", font=(font_family, self.small_text, "bold"),
+                                        fg=WHITE, bg=BLACK)
+        self.temp_feel_image = ImageTk.PhotoImage(
+            Image.open("Images/feeltemp.png").resize((self.tiny_image, self.tiny_image)))
+        self.temp_feel_image_label = tk.Label(self.high_low_frame, image=self.temp_feel_image, bg=BLACK)
+        self.temp_feel_label = tk.Label(self.high_low_frame, text="25\u00B0", font=(font_family, self.small_text, "bold"),
                                         fg=WHITE, bg=BLACK)
 
         self.temp_low_image_label.grid(row=0, column=0)
         self.temp_low_label.grid(row=0, column=1, padx=(5, 20))
         self.temp_high_image_label.grid(row=0, column=2)
         self.temp_high_label.grid(row=0, column=3, padx=(5, 0))
+        self.temp_feel_image_label.grid(row=0, column=4)
+        self.temp_feel_label.grid(row=0, column=5, padx=(5, 0))
 
         self.high_low_frame.grid(row=1, column=1, columnspan=2, sticky='e', padx=40, pady=(0, 20))
-
-        # Feels like temp below current temp
-        self.feels_like_temp_label = tk.Label(self.weather_frame, text="Feels Like 25\u00B0",
-                                              font=(font_family, int(self.small_text * 0.9)), fg="gray70", bg=BLACK)
-        self.feels_like_temp_label.grid(row=2, column=1, columnspan=2, sticky='e', pady=(5, 0))
 
         self.weather_frame.grid(row=0, column=1, sticky='ne', padx=40, pady=30)
 
@@ -131,7 +136,7 @@ class Clock(tk.Tk):
     def update_clock(self):
         #Update clock with custom font
         current_time = time.strftime("%H:%M:%S")
-        img = RenderFont.render_clock_text(current_time, BLACK, WHITE, self.medium_text)
+        img = RenderFont.render_clock_text(current_time, BLACK, WHITE, self.large_text)
         self.clock_label.config(image=img)
         self.clock_label.image = img
 
@@ -156,13 +161,13 @@ class Clock(tk.Tk):
             weather_data_weather = weather_data_main["weather"][0]
 
             self.current_temp_label.config(text=f"{int(weather_data_main['temp'])}\u00B0")
-            self.feels_like_temp_label.config(text=f"Feels Like {int(weather_data_main['feels_like'])}\u00B0")
             # self.humidity_label.config(text=weather_data_main["humidity"])
             # self.uv_label.config(text=int(round(weather_data_main["uvi"],0)))
 
             weather_data_daily = weather_data["daily"][0]
             self.temp_low_label.config(text=f"{int(weather_data_daily['temp']['min'])}\u00B0")
             self.temp_high_label.config(text=f"{int(weather_data_daily['temp']['max'])}\u00B0")
+            self.temp_feel_label.config(text=f"{int(weather_data_main['feels_like'])}\u00B0")
 
             self.weather_image = Image.open("Images/" + weather_data_weather["icon"] + ".png")
             self.weather_image = ImageTk.PhotoImage(self.weather_image.resize((self.tiny_image, self.tiny_image)))
